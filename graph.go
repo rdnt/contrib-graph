@@ -2,12 +2,12 @@
 package graph
 
 import (
-	"github.com/teacat/noire"
 	"io"
 	"math"
 
 	svg "github.com/ajstarks/svgo/float"
 	"github.com/akrennmair/slice"
+	"github.com/teacat/noire"
 )
 
 // Graph is a graph instance that is used to render a contributions graph.
@@ -58,8 +58,8 @@ func NewGraph(contribs []ContributionDay) *Graph {
 	}
 }
 
-// Render writes the generated SVG to the given io.Writer in the appropriate Theme.
-func (g *Graph) Render(f io.WriteCloser, theme Theme) error {
+// Render writes the generated SVG to the given io.Writer in the appropriate ThemeOption.
+func (g *Graph) Render(f io.WriteCloser, applyTheme ThemeOption) error {
 	canvas := svg.New(f)
 
 	canvas.Start(840, 400)
@@ -81,7 +81,7 @@ func (g *Graph) Render(f io.WriteCloser, theme Theme) error {
 		h, v := float64(180), float64(25)
 
 		// colors used for the 3 visible faces
-		c1, c2, c3 := faceColors(c.color, theme)
+		c1, c2, c3 := shadows(applyTheme(c.color))
 
 		xs := slice.Map(p1iso, func(vec vector2) float64 { return vec.X + h })
 		ys := slice.Map(p1iso, func(vec vector2) float64 { return vec.Y + v })
@@ -145,88 +145,76 @@ const (
 	HalloweenDarkColor2 = "#bd561d"
 	HalloweenDarkColor3 = "#fa7a18"
 	HalloweenDarkColor4 = "#fddf68"
-
-	ColorCustom0 = "#161b22"
-	ColorCustom1 = "#631c03"
-	ColorCustom2 = "#bd561d"
-	ColorCustom3 = "#fa7a18"
-	ColorCustom4 = "#fddf68"
 )
 
-func faceColors(color string, theme Theme) (string, string, string) {
-	switch theme {
-	case Dark:
-		switch color {
-		case Color0:
-			return ColorDark0, "#030a12", "#171e26"
-		case Color1:
-			return ColorDark1, "#001b00", "#002f12"
-		case Color2:
-			return ColorDark2, "#004307", "#00571b"
-		case Color3:
-			return ColorDark3, "#007d1a", "#11912e"
-		case Color4:
-			return ColorDark4, "#10a92c", "#24bd40"
-		}
-		return "#2d333b", "#030a12", "#171e26"
-	case DarkHalloween:
-		switch color {
-		case HalloweenColor0:
-			return HalloweenDarkColor0, "#000000", "#00050c"
-		case HalloweenColor1:
-			return HalloweenDarkColor1, "#390000", "#4d0800"
-		case HalloweenColor2:
-			return HalloweenDarkColor2, "#942d00", "#a84109"
-		case HalloweenColor3:
-			return HalloweenDarkColor3, "#d05000", "#e46403"
-		case HalloweenColor4:
-			return HalloweenDarkColor4, "#d3b53e", "#e7c952"
-		}
-		return "#2d333b", "#030a12", "#171e26"
-	case Custom:
-		c1 := noire.NewHex(color)
-		switch color {
-		case Color0:
-			c1 = noire.NewHex(ColorCustom0)
-		case Color1:
-			c1 = noire.NewHex(ColorCustom1)
-		case Color2:
-			c1 = noire.NewHex(ColorCustom2)
-		case Color3:
-			c1 = noire.NewHex(ColorCustom3)
-		case Color4:
-			c1 = noire.NewHex(ColorCustom4)
-		}
-		return c1.HTML(), c1.Shade(0.35).HTML(), c1.Shade(0.2).HTML()
-	case LightHalloween:
-		switch color {
-		case HalloweenColor0:
-			return HalloweenColor0, "#c2c5c8", "#d6d9dc"
-		case HalloweenColor1:
-			return HalloweenColor1, "#d5c522", "#e9d936"
-		case HalloweenColor2:
-			return HalloweenColor2, "#d59d00", "#e9b100"
-		case HalloweenColor3:
-			return HalloweenColor3, "#d56e00", "#e98200"
-		case HalloweenColor4:
-			return HalloweenColor4, "#000001", "#000007"
-		}
-		return "#ebedf0", "#c2c5c8", "#d6d9dc"
+type ThemeOption func(string) string
+
+var DarkTheme = func(color string) string {
+	switch color {
+	case Color0:
+		return ColorDark0
+	case Color1:
+		return ColorDark1
+	case Color2:
+		return ColorDark2
+	case Color3:
+		return ColorDark3
+	case Color4:
+		return ColorDark4
 	default:
-		fallthrough
-	case Light:
-		switch color {
-		case Color0:
-			return Color0, "#c2c5c8", "#d6d9dc"
-		case Color1:
-			return Color1, "#73c080", "#87d494"
-		case Color2:
-			return Color2, "#199b3c", "#2daf50"
-		case Color3:
-			return Color3, "#077725", "#1b8b39"
-		case Color4:
-			return Color4, "#004410", "#0c5824"
-		}
-		return "#ebedf0", "#c2c5c8", "#d6d9dc"
+		return "#2d333b"
 	}
+}
+
+var LightTheme = func(color string) string {
+	switch color {
+	case Color0:
+		return Color0
+	case Color1:
+		return Color1
+	case Color2:
+		return Color2
+	case Color3:
+		return Color3
+	case Color4:
+		return Color4
+	}
+	return "#ebedf0"
+}
+
+var HalloweenDarkTheme = func(color string) string {
+	switch color {
+	case Color0:
+		return HalloweenDarkColor0
+	case Color1:
+		return HalloweenDarkColor1
+	case Color2:
+		return HalloweenDarkColor2
+	case Color3:
+		return HalloweenDarkColor3
+	case Color4:
+		return HalloweenDarkColor4
+	}
+	return "#2d333b"
+}
+
+var HalloweenLightTheme = func(color string) string {
+	switch color {
+	case Color0:
+		return HalloweenColor0
+	case Color1:
+		return HalloweenColor1
+	case Color2:
+		return HalloweenColor2
+	case Color3:
+		return HalloweenColor3
+	case Color4:
+		return HalloweenColor4
+	}
+	return "#ebedf0"
+}
+
+func shadows(color string) (string, string, string) {
+	c1 := noire.NewHex(color)
+	return c1.HTML(), c1.Shade(0.35).HTML(), c1.Shade(0.2).HTML()
 }
