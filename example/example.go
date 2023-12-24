@@ -8,11 +8,11 @@ import (
 
 func main() {
 	contribs := []graph.ContributionDay{
-		{Count: 0, Color: "#ebedf0"},
-		{Count: 1, Color: "#ebedf0"},
-		{Count: 2, Color: "#ebedf0"},
-		{Count: 3, Color: "#ebedf0"},
-		{Count: 4, Color: "#ebedf0"},
+		{Count: 0, Color: graph.Color0},
+		{Count: 1, Color: graph.Color1},
+		{Count: 2, Color: graph.Color2},
+		{Count: 3, Color: graph.Color3},
+		{Count: 4, Color: graph.Color4},
 	}
 
 	g := graph.NewGraph(contribs)
@@ -23,7 +23,7 @@ func main() {
 	}
 	defer fd.Close()
 
-	err = g.Render(fd, graph.Dark, true)
+	err = g.Render(fd, graph.HalloweenDarkTheme)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func main() {
 	}
 	defer fl.Close()
 
-	err = g.Render(fl, graph.Light, false)
+	err = g.Render(fl, graph.LightTheme)
 	if err != nil {
 		panic(err)
 	}

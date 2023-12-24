@@ -7,6 +7,7 @@ import (
 
 	svg "github.com/ajstarks/svgo/float"
 	"github.com/akrennmair/slice"
+	"github.com/teacat/noire"
 )
 
 // Graph is a graph instance that is used to render a contributions graph.
@@ -58,7 +59,7 @@ func NewGraph(contribs []ContributionDay) *Graph {
 }
 
 // Render writes the generated SVG to the given io.Writer in the appropriate Theme.
-func (g *Graph) Render(f io.WriteCloser, theme Theme, isHalloween bool) error {
+func (g *Graph) Render(f io.WriteCloser, theme Theme) error {
 	canvas := svg.New(f)
 
 	canvas.Start(840, 400)
@@ -80,7 +81,7 @@ func (g *Graph) Render(f io.WriteCloser, theme Theme, isHalloween bool) error {
 		h, v := float64(180), float64(25)
 
 		// colors used for the 3 visible faces
-		c1, c2, c3 := faceColors(c.color, theme, isHalloween)
+		c1, c2, c3 := shadows(theme(c.color))
 
 		xs := slice.Map(p1iso, func(vec vector2) float64 { return vec.X + h })
 		ys := slice.Map(p1iso, func(vec vector2) float64 { return vec.Y + v })
@@ -120,83 +121,7 @@ func spaceToIso(x, y, z float64) (h, v float64) {
 	return h, v
 }
 
-const (
-	color0 = "#ebedf0"
-	color1 = "#9be9a8"
-	color2 = "#40c463"
-	color3 = "#30a14e"
-	color4 = "#216e39"
-
-	halloweenColor0 = "#ebedf0"
-	halloweenColor1 = "#ffee4a"
-	halloweenColor2 = "#ffc501"
-	halloweenColor3 = "#fe9600"
-	halloweenColor4 = "#03001c"
-)
-
-func faceColors(color string, theme Theme, isHalloween bool) (string, string, string) {
-	switch theme {
-	case Dark:
-		if isHalloween {
-			switch color {
-			case halloweenColor0:
-				return "#161b22", "#000000", "#00050c"
-			case halloweenColor1:
-				return "#631c03", "#390000", "#4d0800"
-			case halloweenColor2:
-				return "#bd561d", "#942d00", "#a84109"
-			case halloweenColor3:
-				return "#fa7a18", "#d05000", "#e46403"
-			case halloweenColor4:
-				return "#fddf68", "#d3b53e", "#e7c952"
-			}
-		} else {
-			switch color {
-			case color0:
-				return "#2d333b", "#030a12", "#171e26"
-			case color1:
-				return "#0e4429", "#001b00", "#002f12"
-			case color2:
-				return "#006d32", "#004307", "#00571b"
-			case color3:
-				return "#26a641", "#007d1a", "#11912e"
-			case color4:
-				return "#39d353", "#10a92c", "#24bd40"
-			}
-		}
-
-		return "#2d333b", "#030a12", "#171e26"
-	default:
-		fallthrough
-	case Light:
-		if isHalloween {
-			switch color {
-			case halloweenColor0:
-				return "#ebedf0", "#c2c5c8", "#d6d9dc"
-			case halloweenColor1:
-				return "#ffee4a", "#d5c522", "#e9d936"
-			case halloweenColor2:
-				return "#ffc501", "#d59d00", "#e9b100"
-			case halloweenColor3:
-				return "#fe9600", "#d56e00", "#e98200"
-			case halloweenColor4:
-				return "#03001c", "#000001", "#000007"
-			}
-		} else {
-			switch color {
-			case color0:
-				return "#ebedf0", "#c2c5c8", "#d6d9dc"
-			case color1:
-				return "#9be9a8", "#73c080", "#87d494"
-			case color2:
-				return "#40c463", "#199b3c", "#2daf50"
-			case color3:
-				return "#30a14e", "#077725", "#1b8b39"
-			case color4:
-				return "#216e39", "#004410", "#0c5824"
-			}
-		}
-
-		return "#ebedf0", "#c2c5c8", "#d6d9dc"
-	}
+func shadows(color string) (string, string, string) {
+	c1 := noire.NewHex(color)
+	return c1.HTML(), c1.Shade(0.35).HTML(), c1.Shade(0.2).HTML()
 }
