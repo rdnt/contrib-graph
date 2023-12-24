@@ -15,7 +15,7 @@ func main() {
 		{Count: 4, Color: graph.Color4},
 	}
 
-	g := graph.NewGraph(contribs)
+	g := graph.NewGraph(contribs, 48)
 
 	fd, err := os.Create("contributions-dark-halloween.svg")
 	if err != nil {
