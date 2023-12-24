@@ -1,11 +1,14 @@
 package graph
 
 // Theme is the theme that is used to render the graph (Light or Dark).
-type Theme int
+type Theme string
 
 const (
-	Dark Theme = iota
-	Light
+	Dark           Theme = "dark"
+	DarkHalloween  Theme = "darkHalloween"
+	Light          Theme = "light"
+	LightHalloween Theme = "lightHalloween"
+	Custom               = "custom"
 )
 
 type vector2 struct {
