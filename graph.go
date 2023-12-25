@@ -12,7 +12,8 @@ import (
 
 // Graph is a graph instance that is used to render a contributions graph.
 type Graph struct {
-	cols []col
+	cols             []col
+	maxContributions int
 }
 
 type ContributionDay struct {
@@ -23,7 +24,20 @@ type ContributionDay struct {
 // NewGraph creates a graph instance with the contributions-per-day that are
 // passed. Graph.Render can then be used to
 // render the graph.
-func NewGraph(contribs []ContributionDay) *Graph {
+func NewGraph(contribs []ContributionDay, maxContributions int) *Graph {
+	largestNumber := 1
+	for _, entry := range contribs {
+		if entry.Count > largestNumber {
+			largestNumber = entry.Count
+		}
+	}
+
+	if largestNumber > maxContributions {
+		contribs = slice.Map(contribs, func(contrib ContributionDay) ContributionDay {
+			return ContributionDay{contrib.Count * maxContributions / largestNumber, contrib.Color}
+		})
+	}
+
 	var cols []col
 	var total int
 
@@ -64,6 +78,19 @@ func (g *Graph) Render(f io.WriteCloser, theme Theme) error {
 
 	canvas.Start(840, 400)
 
+	// first calculate the biggest Y pillar value, in iso projection
+	largestNumber := -1.0
+	for _, c := range g.cols {
+		p1 := []vector3{c.pts[0], c.pts[1], c.pts[5], c.pts[6], c.pts[7], c.pts[3]}
+		p1iso := isometricProjection(p1)
+		for _, element := range p1iso {
+			abs := math.Abs(element.Y)
+			if abs > largestNumber {
+				largestNumber = abs
+			}
+		}
+	}
+
 	for _, c := range g.cols {
 		// each column has 3 visible faces.
 		// p1 is the outline of the column (all 3 visible faces), p2 is the bottom 2 faces and 3 is the bottom right face
@@ -78,7 +105,7 @@ func (g *Graph) Render(f io.WriteCloser, theme Theme) error {
 		p3iso := isometricProjection(p3)
 
 		// horizontal & vertical offsets to center the whole chart
-		h, v := float64(180), float64(25)
+		h, v := float64(180), largestNumber+25
 
 		// colors used for the 3 visible faces
 		c1, c2, c3 := shadows(theme(c.color))
