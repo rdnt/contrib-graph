@@ -123,5 +123,5 @@ func spaceToIso(x, y, z float64) (h, v float64) {
 
 func shadows(color string) (string, string, string) {
 	c1 := noire.NewHex(color)
-	return c1.HTML(), c1.Shade(0.35).HTML(), c1.Shade(0.2).HTML()
+	return c1.HTML(), c1.Shade(0.15).HTML(), c1.Shade(0.05).HTML()
 }
