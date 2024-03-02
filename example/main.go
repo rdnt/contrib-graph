@@ -7,9 +7,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/rdnt/contributions-graph/example/githubql"
-	"github.com/rdnt/contributions-graph/github"
-	"github.com/rdnt/contributions-graph/graph"
+	"github.com/rdnt/contribs-graph/example/githubql"
+	"github.com/rdnt/contribs-graph/github"
+	"github.com/rdnt/contribs-graph/graph"
 )
 
 func main() {

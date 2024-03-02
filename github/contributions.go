@@ -6,7 +6,7 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/rdnt/contributions-graph/graph"
+	"github.com/rdnt/contribs-graph/graph"
 )
 
 type Client interface {

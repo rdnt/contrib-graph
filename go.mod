@@ -1,4 +1,4 @@
-module github.com/rdnt/contributions-graph
+module github.com/rdnt/contribs-graph
 
 go 1.21
 

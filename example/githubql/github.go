@@ -8,7 +8,7 @@ import (
 	_ "github.com/Khan/genqlient/generate"
 	"github.com/Khan/genqlient/graphql"
 
-	graph "github.com/rdnt/contributions-graph/github"
+	graph "github.com/rdnt/contribs-graph/github"
 )
 
 //go:generate go run github.com/Khan/genqlient genql.yaml
