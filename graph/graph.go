@@ -20,10 +20,10 @@ type ContributionDay struct {
 	Color string
 }
 
-// NewGraph creates a graph instance with the contributions-per-day that are
+// New creates a graph instance with the contributions-per-day that are
 // passed. Graph.Render can then be used to
 // render the graph.
-func NewGraph(contribs []ContributionDay) *Graph {
+func New(contribs []ContributionDay) *Graph {
 	var cols []col
 	var total int
 
